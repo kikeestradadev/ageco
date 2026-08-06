@@ -3,11 +3,25 @@ include ui-mixins
 section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
 		+uiPageHeader(voluntariosData.title, voluntariosData.lead)
+			+uiButton('Agregar Voluntario', './voluntario-formulario.html', 'primary')
+			button(
+				class='inline-flex items-center justify-center gap-2 rounded-md border-2 border-[var(--border-soft)] bg-white px-5 py-3 text-sm font-semibold text-[var(--ageco-black)]',
+				type='button',
+				data-entity-reset='voluntarios'
+			) Restaurar demo
 
 section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
+		script#seed-voluntarios(type='application/json')!= JSON.stringify(voluntariosData)
+
+		div(class='mb-4', data-entity-banner-host='true')
+			p(class='m-0 text-sm text-[var(--ageco-gray-dark)]')
+				| Datos sembrados desde JSON + bucket local.
+				span(class='ml-1 font-semibold', data-entity-count) —
+
 		div(
 			class='data-table',
+			data-entity-list='voluntarios',
 			data-filename='voluntarios-sigo-vigente',
 			data-title='Voluntarios — Sigo Vigente',
 			data-page-size='10'
@@ -26,16 +40,10 @@ section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 							+dataTableSortHeader('Número de asesorados', 3)
 							+dataTableSortHeader('Estado', 4)
 					tbody
-						each item in voluntariosData.items
-							tr(class='border-t border-[var(--border-soft)] bg-white transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)]')
-								td(class='px-4 py-3 whitespace-nowrap')
-									a(
-										class='font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
-										href=`./voluntario-perfil.html?id=${item.id}`
-									)= item.nombre
-								td(class='px-4 py-3 whitespace-nowrap')
-									+uiBadge(item.tipo, 'outline')
+						each item in voluntariosData.items.slice(0, 10)
+							tr(class='border-t border-[var(--border-soft)] bg-white')
+								td(class='px-4 py-3 whitespace-nowrap')= item.nombre
+								td(class='px-4 py-3 whitespace-nowrap')= item.tipo
 								td(class='px-4 py-3 whitespace-nowrap')= item.horasTotales
 								td(class='px-4 py-3 whitespace-nowrap')= item.asesorados.length
-								td(class='px-4 py-3 whitespace-nowrap')
-									+uiBadge(item.estado, 'success')
+								td(class='px-4 py-3 whitespace-nowrap')= item.estado

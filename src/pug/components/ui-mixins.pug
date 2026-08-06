@@ -63,9 +63,9 @@ mixin dataTableToolbar(searchId, placeholder)
 				class='data-table__search w-full max-w-md rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
 				id=searchId,
 				type='search',
-				name='q',
 				placeholder=placeholder || 'Buscar en la tabla…',
 				autocomplete='off',
+				spellcheck='false',
 				data-data-table-search='true'
 			)
 			p(class='data-table__count m-0 shrink-0 text-sm text-[var(--ageco-gray-dark)]', data-data-table-count='true') —

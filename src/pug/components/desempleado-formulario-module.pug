@@ -1,52 +1,49 @@
 include ui-mixins
 
+-
+	const inputClass = 'w-full rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]'
+
 section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
 		a(
 			class='mb-4 inline-flex text-sm font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
 			href='./desempleados.html'
 		) ← Volver a Desempleados
-		+uiPageHeader('Agregar Desempleado', 'Formulario de demostración con campos representativos del ingreso a Sigo Vigente. No envía datos.')
+		+uiPageHeader(
+			'Agregar Desempleado',
+			'Formulario con validación. Al guardar, el registro se agrega al bucket local (localStorage) sembrado desde desempleados-data.json.'
+		)
 
 section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
+		script#seed-desempleados(type='application/json')!= JSON.stringify(desempleadosData)
 		form(
-			class='grid max-w-3xl gap-5 rounded-lg border border-[var(--border-soft)] bg-[var(--ageco-gray)] p-6',
-			action='./desempleados.html',
-			method='get'
+			class='entity-form grid max-w-3xl gap-5 rounded-lg border border-[var(--border-soft)] bg-[var(--ageco-gray)] p-6',
+			action='#',
+			method='get',
+			data-entity-form='desempleados'
 		)
 			div(class='grid gap-5 m:grid-cols-2')
 				div(class='grid gap-2')
-					label(class='text-sm font-semibold', for='nombre') Nombre completo
-					input#nombre(
-						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
-						type='text',
-						name='nombre',
-						placeholder='Nombre y apellidos'
-					)
+					label(class='text-sm font-semibold', for='nombre') Nombre completo *
+					input#nombre(class=inputClass, type='text', name='nombre', placeholder='Nombre y apellidos')
 				div(class='grid gap-2')
-					label(class='text-sm font-semibold', for='email') Correo electrónico
-					input#email(
-						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
-						type='email',
-						name='email',
-						placeholder='correo@ejemplo.com'
-					)
+					label(class='text-sm font-semibold', for='email') Correo electrónico *
+					input#email(class=inputClass, type='email', name='email', placeholder='correo@ejemplo.com')
 				div(class='grid gap-2')
-					label(class='text-sm font-semibold', for='telefono') Teléfono
-					input#telefono(
-						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
-						type='tel',
-						name='telefono',
-						placeholder='8888-0000'
-					)
+					label(class='text-sm font-semibold', for='telefono') Teléfono *
+					input#telefono(class=inputClass, type='tel', name='telefono', placeholder='8888-0000')
 				div(class='grid gap-2')
-					label(class='text-sm font-semibold', for='fechaIngreso') Fecha de ingreso
-					input#fechaIngreso(
-						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
-						type='date',
-						name='fechaIngreso'
-					)
+					label(class='text-sm font-semibold', for='fechaIngreso') Fecha de ingreso *
+					input#fechaIngreso(class=inputClass, type='date', name='fechaIngreso')
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='estado') Estado *
+					select#estado(class=inputClass, name='estado')
+						option(value='En seguimiento') En seguimiento
+						option(value='Con empleo') Con empleo
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='voluntarioAsignado') Voluntario asignado
+					input#voluntarioAsignado(class=inputClass, type='text', name='voluntarioAsignado', placeholder='Nombre del voluntario')
 
 			fieldset(class='m-0 grid gap-3 border-0 p-0')
 				legend(class='mb-1 text-sm font-semibold') Experiencia laboral
@@ -63,25 +60,32 @@ section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 			div(class='grid gap-5 m:grid-cols-2')
 				div(class='grid gap-2')
 					label(class='text-sm font-semibold', for='nivelIngles') Nivel de inglés
-					select#nivelIngles(
-						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
-						name='nivelIngles'
-					)
+					select#nivelIngles(class=inputClass, name='nivelIngles')
 						option(value='Ninguno') Ninguno
 						option(value='Básico') Básico
 						option(value='Intermedio') Intermedio
 						option(value='Avanzado') Avanzado
 				div(class='grid gap-2')
 					label(class='text-sm font-semibold', for='licencia') Licencia de conducir
-					select#licencia(
-						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
-						name='licencia'
-					)
+					select#licencia(class=inputClass, name='licencia')
 						option(value='No') No
 						option(value='B1') B1
 						option(value='C1') C1
 						option(value='B1 / C1') B1 / C1
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='capacitacion') Capacitación inicial
+					select#capacitacion(class=inputClass, name='capacitacion')
+						option(value='Inducción Sigo Vigente') Inducción Sigo Vigente
+						option(value='Preparación para el Empleo') Preparación para el Empleo
+						option(value='Servicio al Cliente') Servicio al Cliente
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='proximaAsesoria') Próxima asesoría
+					input#proximaAsesoria(class=inputClass, type='date', name='proximaAsesoria')
 
 			div(class='flex flex-wrap gap-3')
-				+uiButton('Guardar (demo)', null, 'primary', { type: 'submit' })
+				button(
+					class='inline-flex items-center justify-center rounded-md border-2 border-[var(--btn-primary)] bg-[var(--btn-primary)] px-5 py-3 text-sm font-semibold text-white',
+					type='button',
+					data-entity-save='true'
+				) Guardar en bucket
 				+uiButton('Cancelar', './desempleados.html', 'outline')

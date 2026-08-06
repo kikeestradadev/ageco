@@ -4,11 +4,28 @@ section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
 		+uiPageHeader(desempleadosData.title, desempleadosData.lead)
 			+uiButton('Agregar Desempleado', './desempleado-formulario.html', 'primary')
+			button(
+				class='inline-flex items-center justify-center gap-2 rounded-md border-2 border-[var(--border-soft)] bg-white px-5 py-3 text-sm font-semibold text-[var(--ageco-black)]',
+				type='button',
+				data-entity-reset='desempleados'
+			) Restaurar demo
 
 section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
+		script#seed-desempleados(type='application/json')!= JSON.stringify(desempleadosData)
+
+		div(class='mb-4', data-entity-banner-host='true')
+			p(class='m-0 text-sm text-[var(--ageco-gray-dark)]')
+				| En
+				code(class='mx-1 rounded bg-[var(--ageco-gray)] px-1') npm run dev
+				|  los registros se escriben de verdad en
+				code(class='mx-1 rounded bg-[var(--ageco-gray)] px-1') src/data/desempleados-data.json
+				| .
+				span(class='ml-1 font-semibold', data-entity-count) —
+
 		div(
 			class='data-table',
+			data-entity-list='desempleados',
 			data-filename='desempleados-sigo-vigente',
 			data-title='Desempleados — Sigo Vigente',
 			data-page-size='10'
@@ -27,20 +44,10 @@ section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 							+dataTableSortHeader('Última capacitación', 3)
 							+dataTableSortHeader('Próxima asesoría', 4)
 					tbody
-						each item in desempleadosData.items
-							tr(class='border-t border-[var(--border-soft)] bg-white transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)]')
-								td(class='px-4 py-3 whitespace-nowrap')
-									a(
-										class='font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
-										href=`./desempleado-perfil.html?id=${item.id}`
-									)= item.nombre
+						each item in desempleadosData.items.slice(0, 10)
+							tr(class='border-t border-[var(--border-soft)] bg-white')
+								td(class='px-4 py-3 whitespace-nowrap')= item.nombre
 								td(class='px-4 py-3 whitespace-nowrap')= item.fechaIngreso
-								td(class='px-4 py-3 whitespace-nowrap')
-									if item.estado === 'En seguimiento'
-										+uiBadge(item.estado, 'success')
-									else if item.estado === 'Con empleo'
-										+uiBadge(item.estado, 'info')
-									else
-										+uiBadge(item.estado, 'danger')
+								td(class='px-4 py-3 whitespace-nowrap')= item.estado
 								td(class='px-4 py-3 whitespace-nowrap')= item.ultimaCapacitacion
 								td(class='px-4 py-3 whitespace-nowrap')= item.proximaAsesoria

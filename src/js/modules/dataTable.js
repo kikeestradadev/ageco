@@ -3,6 +3,8 @@ const normalize = (value) =>
 		.toLowerCase()
 		.normalize('NFD')
 		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/[\u200b-\u200d\ufeff\u00a0]/g, '')
+		.replace(/\s+/g, ' ')
 		.trim();
 
 const cellText = (cell) => (cell ? cell.textContent.replace(/\s+/g, ' ').trim() : '');
@@ -32,6 +34,11 @@ const compareValues = (a, b) => {
 const matchedRows = (tbody) =>
 	[...tbody.querySelectorAll('tr')].filter((row) => row.dataset.filteredOut !== 'true');
 
+const rowSearchText = (row) => {
+	const fromData = row.getAttribute('data-search') || '';
+	return `${fromData} ${row.textContent || ''}`;
+};
+
 const exportCsv = (table, tbody, filename) => {
 	const headerRow = table.querySelector('thead tr');
 	const rows = [headerRow, ...matchedRows(tbody)].filter(Boolean);
@@ -51,45 +58,30 @@ const exportCsv = (table, tbody, filename) => {
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement('a');
 	link.href = url;
-	link.download = filename.endsWith('.csv') ? filename : `${filename}.csv`;
+	link.download = `${filename}.csv`;
 	link.click();
 	URL.revokeObjectURL(url);
 };
 
 const shareWhatsApp = (tbody, table, title) => {
 	const headers = [...table.querySelectorAll('thead th')].map((th) => cellText(th));
-	const rows = matchedRows(tbody);
-	const preview = rows.slice(0, 12);
-
-	const lines = [
-		title || 'Listado AGECO · Sigo Vigente',
-		'',
-		...preview.map((row, index) => {
-			const cells = [...row.children].map((cell) => cellText(cell));
-			const summary = headers
-				.map((header, i) => `${header}: ${cells[i] || ''}`)
-				.join(' | ');
-			return `${index + 1}. ${summary}`;
-		}),
-	];
-
-	if (rows.length > 12) {
-		lines.push('', '…(listado truncado para WhatsApp)');
-	}
-
-	const url = `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`;
-	window.open(url, '_blank', 'noopener,noreferrer');
+	const lines = matchedRows(tbody).map((row) =>
+		[...row.children]
+			.map((cell, index) => `${headers[index] || `Col ${index + 1}`}: ${cellText(cell)}`)
+			.join(' · ')
+	);
+	const text = [`*${title}*`, ...lines].join('\n');
+	window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
 };
 
-const updateSortIndicators = (root, activeIndex, direction) => {
+const updateSortIndicators = (root, sortCol, sortDir) => {
 	root.querySelectorAll('[data-data-table-sort]').forEach((button) => {
 		const col = Number(button.dataset.dataTableSort);
 		const indicator = button.querySelector('[data-sort-indicator]');
 		if (!indicator) return;
-
-		if (col === activeIndex) {
-			indicator.textContent = direction === 'asc' ? ' ↑' : ' ↓';
-			button.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+		if (col === sortCol) {
+			indicator.textContent = sortDir === 'asc' ? '▲' : '▼';
+			button.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
 		} else {
 			indicator.textContent = '';
 			button.setAttribute('aria-sort', 'none');
@@ -102,24 +94,22 @@ const ensurePagination = (root) => {
 	if (pager) return pager;
 
 	pager = document.createElement('div');
+	pager.dataset.dataTablePagination = 'true';
 	pager.className =
 		'data-table__pagination mt-4 flex flex-col gap-3 m:flex-row m:items-center m:justify-between';
-	pager.setAttribute('data-data-table-pagination', 'true');
 	pager.innerHTML = `
-		<div class="flex flex-wrap items-center gap-2 text-sm text-[var(--ageco-gray-dark)]">
-			<label class="inline-flex items-center gap-2">
-				<span>Filas por página</span>
-				<select
-					class="rounded-md border border-[var(--border-soft)] bg-white px-2 py-1.5 text-sm outline-none focus:border-[var(--ageco-red)]"
-					data-data-table-page-size
-				>
-					<option value="5">5</option>
-					<option value="10">10</option>
-				</select>
-			</label>
-			<span data-data-table-page-info>—</span>
-		</div>
+		<label class="inline-flex items-center gap-2 text-sm text-[var(--ageco-gray-dark)]">
+			<span>Filas por página</span>
+			<select
+				class="rounded-md border border-[var(--border-soft)] bg-white px-2 py-1.5 text-sm"
+				data-data-table-page-size
+			>
+				<option value="5">5</option>
+				<option value="10" selected>10</option>
+			</select>
+		</label>
 		<div class="flex flex-wrap items-center gap-2">
+			<p class="m-0 text-sm text-[var(--ageco-gray-dark)]" data-data-table-page-info>—</p>
 			<button
 				type="button"
 				class="inline-flex items-center justify-center rounded-md border border-[var(--border-soft)] bg-white px-3 py-2 text-xs font-semibold text-[var(--ageco-black)] disabled:cursor-not-allowed disabled:opacity-40"
@@ -142,14 +132,20 @@ const dataTable = () => {
 		if (root.dataset.dataTableReady === 'true') return;
 
 		const table = root.querySelector('table');
-		const tbody = table?.querySelector('tbody');
+		const getTbody = () => table?.querySelector('tbody');
 		const searchInput = root.querySelector('[data-data-table-search]');
 		const countEl = root.querySelector('[data-data-table-count]');
 		const printBtn = root.querySelector('[data-data-table-print]');
 		const excelBtn = root.querySelector('[data-data-table-excel]');
 		const whatsappBtn = root.querySelector('[data-data-table-whatsapp]');
 
+		const tbody = getTbody();
 		if (!table || !tbody) return;
+
+		if (root._dataTableAbort) root._dataTableAbort.abort();
+		const abortController = new AbortController();
+		root._dataTableAbort = abortController;
+		const { signal } = abortController;
 
 		const filename = root.dataset.filename || 'listado-ageco';
 		const title = root.dataset.title || 'Listado AGECO';
@@ -174,8 +170,11 @@ const dataTable = () => {
 		}
 
 		const render = () => {
-			const matched = matchedRows(tbody);
-			const total = tbody.querySelectorAll('tr').length;
+			const body = getTbody();
+			if (!body) return;
+
+			const matched = matchedRows(body);
+			const total = body.querySelectorAll('tr').length;
 			const matchedCount = matched.length;
 			const totalPages = Math.max(1, Math.ceil(matchedCount / pageSize) || 1);
 
@@ -185,7 +184,7 @@ const dataTable = () => {
 			const start = (currentPage - 1) * pageSize;
 			const end = start + pageSize;
 
-			tbody.querySelectorAll('tr').forEach((row) => {
+			body.querySelectorAll('tr').forEach((row) => {
 				if (row.dataset.filteredOut === 'true') {
 					row.style.display = 'none';
 					return;
@@ -234,9 +233,13 @@ const dataTable = () => {
 		};
 
 		const applyFilter = () => {
+			const body = getTbody();
+			if (!body) return;
+
 			const query = normalize(searchInput?.value || '');
-			tbody.querySelectorAll('tr').forEach((row) => {
-				const match = !query || normalize(row.textContent).includes(query);
+			body.querySelectorAll('tr').forEach((row) => {
+				const haystack = normalize(rowSearchText(row));
+				const match = !query || haystack.includes(query);
 				row.dataset.filteredOut = match ? 'false' : 'true';
 			});
 			currentPage = 1;
@@ -244,6 +247,9 @@ const dataTable = () => {
 		};
 
 		const applySort = (colIndex) => {
+			const body = getTbody();
+			if (!body) return;
+
 			if (sortCol === colIndex) {
 				sortDir = sortDir === 'asc' ? 'desc' : 'asc';
 			} else {
@@ -251,7 +257,7 @@ const dataTable = () => {
 				sortDir = 'asc';
 			}
 
-			const rows = [...tbody.querySelectorAll('tr')];
+			const rows = [...body.querySelectorAll('tr')];
 			rows.sort((rowA, rowB) => {
 				const a = cellText(rowA.children[colIndex]);
 				const b = cellText(rowB.children[colIndex]);
@@ -259,53 +265,85 @@ const dataTable = () => {
 				return sortDir === 'asc' ? result : -result;
 			});
 
-			rows.forEach((row) => tbody.appendChild(row));
+			rows.forEach((row) => body.appendChild(row));
 			updateSortIndicators(root, sortCol, sortDir);
 			render();
 		};
 
-		searchInput?.addEventListener('input', applyFilter);
+		searchInput?.addEventListener('input', applyFilter, { signal });
+		searchInput?.addEventListener('search', applyFilter, { signal });
+		searchInput?.addEventListener('keyup', applyFilter, { signal });
 
 		root.querySelectorAll('[data-data-table-sort]').forEach((button) => {
-			button.addEventListener('click', () => {
-				const colIndex = Number(button.dataset.dataTableSort);
-				if (Number.isNaN(colIndex)) return;
-				applySort(colIndex);
-			});
+			button.addEventListener(
+				'click',
+				() => {
+					const colIndex = Number(button.dataset.dataTableSort);
+					if (Number.isNaN(colIndex)) return;
+					applySort(colIndex);
+				},
+				{ signal }
+			);
 		});
 
-		prevBtn?.addEventListener('click', () => {
-			currentPage -= 1;
-			render();
-		});
-
-		nextBtn?.addEventListener('click', () => {
-			currentPage += 1;
-			render();
-		});
-
-		pageSizeSelect?.addEventListener('change', () => {
-			pageSize = Math.min(maxPageSize, Number(pageSizeSelect.value) || maxPageSize);
-			currentPage = 1;
-			render();
-		});
-
-		printBtn?.addEventListener('click', () => {
-			const matched = matchedRows(tbody);
-			tbody.querySelectorAll('tr').forEach((row) => {
-				row.style.display = row.dataset.filteredOut === 'true' ? 'none' : '';
-			});
-			root.classList.add('is-printing');
-			window.print();
-			window.setTimeout(() => {
-				root.classList.remove('is-printing');
+		prevBtn?.addEventListener(
+			'click',
+			() => {
+				currentPage -= 1;
 				render();
-			}, 300);
-			void matched;
-		});
+			},
+			{ signal }
+		);
 
-		excelBtn?.addEventListener('click', () => exportCsv(table, tbody, filename));
-		whatsappBtn?.addEventListener('click', () => shareWhatsApp(tbody, table, title));
+		nextBtn?.addEventListener(
+			'click',
+			() => {
+				currentPage += 1;
+				render();
+			},
+			{ signal }
+		);
+
+		pageSizeSelect?.addEventListener(
+			'change',
+			() => {
+				pageSize = Math.min(maxPageSize, Number(pageSizeSelect.value) || maxPageSize);
+				currentPage = 1;
+				render();
+			},
+			{ signal }
+		);
+
+		printBtn?.addEventListener(
+			'click',
+			() => {
+				const body = getTbody();
+				body?.querySelectorAll('tr').forEach((row) => {
+					row.style.display = row.dataset.filteredOut === 'true' ? 'none' : '';
+				});
+				root.classList.add('is-printing');
+				window.print();
+				window.setTimeout(() => {
+					root.classList.remove('is-printing');
+					render();
+				}, 300);
+			},
+			{ signal }
+		);
+
+		excelBtn?.addEventListener(
+			'click',
+			() => exportCsv(table, getTbody(), filename),
+			{ signal }
+		);
+		whatsappBtn?.addEventListener(
+			'click',
+			() => shareWhatsApp(getTbody(), table, title),
+			{ signal }
+		);
+
+		root._dataTableApplyFilter = applyFilter;
+		root._dataTableRender = render;
 
 		applyFilter();
 		root.dataset.dataTableReady = 'true';

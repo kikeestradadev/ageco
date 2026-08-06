@@ -1,0 +1,15 @@
+{
+	"panelTitle": "Documentación",
+	"items": [
+		{ "label": "Colores", "href": "#colores" },
+		{ "label": "Tipografía", "href": "#tipografia" },
+		{ "label": "Logos", "href": "#logos" },
+		{ "label": "Botones", "href": "#botones" },
+		{ "label": "Badges", "href": "#badges" },
+		{ "label": "Tarjetas", "href": "#tarjetas" },
+		{ "label": "Formularios", "href": "#formularios" },
+		{ "label": "Tablas", "href": "#tabla" },
+		{ "label": "Alertas", "href": "#alertas" },
+		{ "label": "Navegación", "href": "#navegacion" }
+	]
+}

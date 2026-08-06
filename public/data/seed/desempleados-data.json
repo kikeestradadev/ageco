@@ -3,30 +3,6 @@
 	"lead": "Personas adultas mayores en seguimiento del programa Sigo Vigente — Empleo.",
 	"items": [
 		{
-			"nombre": "enrique",
-			"email": "enrique@test.com",
-			"telefono": "8888-9999",
-			"fechaIngreso": "2026-08-06",
-			"estado": "En seguimiento",
-			"progreso": 10,
-			"experienciaLimpieza": "No",
-			"manipulacionArmas": "No",
-			"servicioCliente": "No",
-			"nivelIngles": "Ninguno",
-			"licencia": "No",
-			"capacitaciones": [
-				"Inducción Sigo Vigente"
-			],
-			"asesorias": [],
-			"resultadosIntermedios": [],
-			"ultimaCapacitacion": "Inducción Sigo Vigente",
-			"proximaAsesoria": "—",
-			"voluntarioAsignado": "Sin asignar",
-			"id": 51,
-			"creadoEn": "2026-08-06T19:30:28.012Z",
-			"esNuevo": true
-		},
-		{
 			"id": 1,
 			"nombre": "María Pérez Campos",
 			"email": "persona1@email.com",
@@ -1483,6 +1459,5 @@
 			"proximaAsesoria": "—",
 			"voluntarioAsignado": "Carlos Méndez"
 		}
-	],
-	"updatedAt": "2026-08-06T19:30:28.012Z"
+	]
 }

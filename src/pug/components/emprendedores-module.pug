@@ -3,11 +3,25 @@ include ui-mixins
 section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
 		+uiPageHeader(emprendedoresData.title, emprendedoresData.lead)
+			+uiButton('Agregar Emprendedor', './emprendedor-formulario.html', 'primary')
+			button(
+				class='inline-flex items-center justify-center gap-2 rounded-md border-2 border-[var(--border-soft)] bg-white px-5 py-3 text-sm font-semibold text-[var(--ageco-black)]',
+				type='button',
+				data-entity-reset='emprendedores'
+			) Restaurar demo
 
 section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 	div(class='mx-auto w-full max-w-[var(--container)]')
+		script#seed-emprendedores(type='application/json')!= JSON.stringify(emprendedoresData)
+
+		div(class='mb-4', data-entity-banner-host='true')
+			p(class='m-0 text-sm text-[var(--ageco-gray-dark)]')
+				| Datos sembrados desde JSON + bucket local.
+				span(class='ml-1 font-semibold', data-entity-count) —
+
 		div(
 			class='data-table',
+			data-entity-list='emprendedores',
 			data-filename='emprendedores-sigo-vigente',
 			data-title='Emprendedores — Sigo Vigente',
 			data-page-size='10'
@@ -26,16 +40,10 @@ section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
 							+dataTableSortHeader('Estado', 3)
 							+dataTableSortHeader('Próxima asesoría', 4)
 					tbody
-						each item in emprendedoresData.items
-							tr(class='border-t border-[var(--border-soft)] bg-white transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)]')
-								td(class='px-4 py-3 whitespace-nowrap')
-									a(
-										class='font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
-										href=`./emprendedor-perfil.html?id=${item.id}`
-									)= item.nombre
+						each item in emprendedoresData.items.slice(0, 10)
+							tr(class='border-t border-[var(--border-soft)] bg-white')
+								td(class='px-4 py-3 whitespace-nowrap')= item.nombre
 								td(class='px-4 py-3')= item.negocio
-								td(class='px-4 py-3 whitespace-nowrap')
-									+uiBadge(item.etapa, 'warning')
-								td(class='px-4 py-3 whitespace-nowrap')
-									+uiBadge(item.estado, 'success')
+								td(class='px-4 py-3 whitespace-nowrap')= item.etapa
+								td(class='px-4 py-3 whitespace-nowrap')= item.estado
 								td(class='px-4 py-3 whitespace-nowrap')= item.proximaAsesoria

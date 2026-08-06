@@ -3,7 +3,7 @@ include ui-mixins
 -
 	const voluntarioDefault = voluntariosData.items[0]
 
-section(class='perfil-detalle mx-auto w-full max-w-[var(--main-container)] px-[15px]', data-perfil-tipo='voluntario')
+section(class='perfil-detalle mx-auto w-full max-w-[var(--main-container)] px-[15px]', data-perfil-tipo='voluntarios')
 	div(class='mx-auto w-full max-w-[var(--container)]')
 		script#perfil-data(type='application/json')!= JSON.stringify(voluntariosData.items)
 

@@ -17,7 +17,19 @@ import cssnano from 'cssnano';
 const isProd = process.env.NODE_ENV === 'production';
 const DEV_PORT = 3000;
 const PUBLIC_DIR = path.resolve('public');
+const DATA_DIR = path.resolve('src/data');
+const SEED_DIR = path.resolve('src/data/seed');
+const PUBLIC_DATA_DIR = path.resolve('public/data');
 const PAGES_GLOB = './src/pug/pages/**/*.pug';
+
+const BUCKET_FILES = {
+	desempleados: 'desempleados-data.json',
+	emprendedores: 'emprendedores-data.json',
+	voluntarios: 'voluntarios-data.json',
+};
+
+/** Evita que un write de la API dispare livereload a mitad del guardado. */
+let suppressDataReload = false;
 
 const mimeTypes = {
 	'.html': 'text/html; charset=utf-8',
@@ -113,6 +125,163 @@ const openBrowser = (url) => {
 	exec(command, () => {});
 };
 
+const sendJson = (res, statusCode, payload) => {
+	const body = JSON.stringify(payload);
+	res.writeHead(statusCode, {
+		'Content-Type': 'application/json; charset=utf-8',
+		'Cache-Control': 'no-store, no-cache, must-revalidate',
+		Pragma: 'no-cache',
+	});
+	res.end(body);
+};
+
+const readRequestBody = (req) =>
+	new Promise((resolve, reject) => {
+		const chunks = [];
+		req.on('data', (chunk) => chunks.push(chunk));
+		req.on('end', () => {
+			const raw = Buffer.concat(chunks).toString('utf8');
+			if (!raw) {
+				resolve({});
+				return;
+			}
+			try {
+				resolve(JSON.parse(raw));
+			} catch (error) {
+				reject(error);
+			}
+		});
+		req.on('error', reject);
+	});
+
+const readBucketFile = (entity) => {
+	const fileName = BUCKET_FILES[entity];
+	if (!fileName) return null;
+
+	const candidates = [
+		path.join(PUBLIC_DATA_DIR, fileName),
+		path.join(DATA_DIR, fileName),
+		path.join(SEED_DIR, fileName),
+	];
+
+	for (const filePath of candidates) {
+		if (!fs.existsSync(filePath)) continue;
+		const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+		if (!Array.isArray(data.items)) data.items = [];
+		return data;
+	}
+
+	return { title: entity, lead: '', items: [] };
+};
+
+const writeBucketFile = (entity, data) => {
+	const fileName = BUCKET_FILES[entity];
+	if (!fileName) throw new Error(`Entidad desconocida: ${entity}`);
+
+	fs.mkdirSync(PUBLIC_DATA_DIR, { recursive: true });
+	fs.mkdirSync(DATA_DIR, { recursive: true });
+
+	const json = `${JSON.stringify(data, null, '\t')}\n`;
+	suppressDataReload = true;
+	try {
+		fs.writeFileSync(path.join(PUBLIC_DATA_DIR, fileName), json, 'utf8');
+		fs.writeFileSync(path.join(DATA_DIR, fileName), json, 'utf8');
+	} finally {
+		setTimeout(() => {
+			suppressDataReload = false;
+		}, 800);
+	}
+};
+
+const resetBucketFile = (entity) => {
+	const fileName = BUCKET_FILES[entity];
+	if (!fileName) throw new Error(`Entidad desconocida: ${entity}`);
+
+	const seedPath = path.join(SEED_DIR, fileName);
+	if (!fs.existsSync(seedPath)) {
+		throw new Error(`No hay seed en ${seedPath}`);
+	}
+
+	const data = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+	if (!Array.isArray(data.items)) data.items = [];
+	writeBucketFile(entity, data);
+	return data;
+};
+
+const nextBucketId = (items) =>
+	items.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+
+const handleBucketApi = async (req, res, requestUrl) => {
+	const parts = requestUrl.pathname.split('/').filter(Boolean);
+	// /api/bucket/:entity[/:action]
+	const entity = parts[2];
+	const action = parts[3] || '';
+
+	if (!BUCKET_FILES[entity]) {
+		sendJson(res, 404, { ok: false, error: `Entidad no encontrada: ${entity}` });
+		return;
+	}
+
+	if (req.method === 'GET' && !action) {
+		const data = readBucketFile(entity);
+		sendJson(res, 200, {
+			ok: true,
+			mode: 'file',
+			entity,
+			title: data.title || entity,
+			lead: data.lead || '',
+			items: data.items || [],
+			count: (data.items || []).length,
+		});
+		return;
+	}
+
+	if (req.method === 'POST' && action === 'reset') {
+		const data = resetBucketFile(entity);
+		sendJson(res, 200, {
+			ok: true,
+			mode: 'file',
+			entity,
+			items: data.items,
+			count: data.items.length,
+			message: 'Demo restaurada desde seed JSON.',
+		});
+		return;
+	}
+
+	if (req.method === 'POST' && !action) {
+		const body = await readRequestBody(req);
+		const item = body?.item;
+		if (!item || typeof item !== 'object') {
+			sendJson(res, 400, { ok: false, error: 'Se requiere { item: {...} }' });
+			return;
+		}
+
+		const data = readBucketFile(entity);
+		const record = {
+			...item,
+			id: nextBucketId(data.items),
+			creadoEn: new Date().toISOString(),
+			esNuevo: true,
+		};
+		data.items.unshift(record);
+		data.updatedAt = new Date().toISOString();
+		writeBucketFile(entity, data);
+
+		console.log(`[api] ${entity}: agregado id=${record.id} nombre="${record.nombre}"`);
+		sendJson(res, 201, {
+			ok: true,
+			mode: 'file',
+			entity,
+			item: record,
+			count: data.items.length,
+		});
+		return;
+	}
+
+	sendJson(res, 405, { ok: false, error: 'Método no permitido' });
+};
+
 const startDevServer = () => {
 	const server = http.createServer((req, res) => {
 		const requestUrl = new URL(req.url || '/', `http://${req.headers.host}`);
@@ -127,6 +296,19 @@ const startDevServer = () => {
 			liveClients.add(res);
 			req.on('close', () => {
 				liveClients.delete(res);
+			});
+			return;
+		}
+
+		if (requestUrl.pathname === '/api/health') {
+			sendJson(res, 200, { ok: true, bucketApi: true });
+			return;
+		}
+
+		if (requestUrl.pathname.startsWith('/api/bucket/')) {
+			handleBucketApi(req, res, requestUrl).catch((error) => {
+				console.error('[api]', error);
+				sendJson(res, 500, { ok: false, error: error.message || 'Error interno' });
 			});
 			return;
 		}
@@ -151,7 +333,16 @@ const startDevServer = () => {
 
 			const ext = path.extname(filePath).toLowerCase();
 			const contentType = mimeTypes[ext] || 'application/octet-stream';
-			res.writeHead(200, { 'Content-Type': contentType });
+			// En local, evitar que el navegador sirva HTML/JS/CSS viejos tras rebuilds.
+			const noStore =
+				ext === '.html' ||
+				ext === '.js' ||
+				ext === '.css' ||
+				ext === '.map' ||
+				ext === '.json'
+					? { 'Cache-Control': 'no-store, no-cache, must-revalidate', Pragma: 'no-cache' }
+					: {};
+			res.writeHead(200, { 'Content-Type': contentType, ...noStore });
 
 			if (ext === '.html') {
 				const html = fileData.toString('utf8');
@@ -169,6 +360,7 @@ const startDevServer = () => {
 	server.listen(DEV_PORT, () => {
 		const url = `http://localhost:${DEV_PORT}`;
 		console.log(`[dev] ${url}`);
+		console.log(`[dev] Bucket API: ${url}/api/bucket/:entity (escribe JSON real)`);
 		openBrowser(url);
 	});
 
@@ -359,7 +551,11 @@ gulp.task(
 		() =>
 			gulp
 				.src('src/images/**/*', { encoding: false, allowEmpty: true })
-				.pipe(gulp.dest('public/images'))
+				.pipe(gulp.dest('public/images')),
+		() =>
+			gulp
+				.src('src/data/**/*.json', { allowEmpty: true })
+				.pipe(gulp.dest('public/data'))
 	)
 );
 
@@ -409,10 +605,15 @@ gulp.task(
 			debounce(gulp.series('styles', reloadCss), 120)
 		);
 		gulp.watch('src/js/**/*.js', debounce(gulp.series('scripts', reload), 120));
-		gulp.watch(
-			['src/data/**/*.json', 'src/md/**/*.md'],
-			debounce(gulp.series('pug', 'styles', reload), 120)
-		);
+		gulp.watch(['src/md/**/*.md'], debounce(gulp.series('assets', 'pug', 'styles', reload), 120));
+		gulp.watch(['src/data/**/*.json'], debounce(() => {
+			// La API escribe JSON en disco; no recargar la página a mitad del guardado.
+			if (suppressDataReload) {
+				gulp.series('assets')();
+				return;
+			}
+			gulp.series('assets', 'pug', 'styles', reload)();
+		}, 120));
 		gulp.watch(
 			['src/assets/**/*', 'src/images/**/*'],
 			debounce(gulp.series('assets', reload), 120)

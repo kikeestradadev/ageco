@@ -1,0 +1,29 @@
+{
+	"brand": "AGECO",
+	"program": "Sigo Vigente",
+	"items": [
+		{ "label": "Inicio", "href": "./index.html", "id": "home" },
+		{ "label": "Panel de Control", "href": "./dashboard.html", "id": "dashboard" },
+		{ "label": "Desempleados", "href": "./desempleados.html", "id": "desempleados" },
+		{ "label": "Emprendedores", "href": "./emprendedores.html", "id": "emprendedores" },
+		{ "label": "Voluntarios", "href": "./voluntarios.html", "id": "voluntarios" },
+		{ "label": "Reportes", "href": "./reportes.html", "id": "reportes" }
+	],
+	"authItems": [
+		{ "label": "Iniciar sesión", "href": "./login.html", "id": "login" },
+		{ "label": "Regístrese", "href": "./registro.html", "id": "registro" }
+	],
+	"footer": {
+		"contacto": {
+			"direccion": "San José, Costa Rica",
+			"telefono": "+506 2222-0000",
+			"email": "info@ageco.org",
+			"web": "https://ageco.org/"
+		},
+		"redes": [
+			{ "label": "Facebook", "href": "https://www.facebook.com/", "icon": "facebook" },
+			{ "label": "Instagram", "href": "https://www.instagram.com/", "icon": "instagram" },
+			{ "label": "YouTube", "href": "https://www.youtube.com/", "icon": "youtube" }
+		]
+	}
+}
