@@ -1,0 +1,9 @@
+{
+	"title": "Iniciar sesión",
+	"lead": "Acceso fake al prototipo CRM. Puede dejar los campos vacíos: al hacer clic entrará directo al panel.",
+	"submitLabel": "Entrar al panel",
+	"submitHref": "./dashboard.html",
+	"altLabel": "¿No tiene cuenta?",
+	"altLinkLabel": "Regístrese",
+	"altHref": "./registro.html"
+}

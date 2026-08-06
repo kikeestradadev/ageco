@@ -1,0 +1,41 @@
+include ui-mixins
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		+uiPageHeader(voluntariosData.title, voluntariosData.lead)
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		div(
+			class='data-table',
+			data-filename='voluntarios-sigo-vigente',
+			data-title='Voluntarios — Sigo Vigente',
+			data-page-size='10'
+		)
+			+dataTableToolbar('buscar-voluntario', 'Buscar por nombre, tipo, estado…')
+
+			div(class='w-full overflow-x-auto rounded-lg border border-[var(--border-soft)]')
+				table(
+					class='w-full min-w-[48rem] border-collapse text-left text-[length:var(--p-size)] leading-[length:var(--p-line)]'
+				)
+					thead
+						tr(class='bg-[var(--ageco-red)] text-white')
+							+dataTableSortHeader('Nombre', 0)
+							+dataTableSortHeader('Tipo', 1)
+							+dataTableSortHeader('Horas registradas', 2)
+							+dataTableSortHeader('Número de asesorados', 3)
+							+dataTableSortHeader('Estado', 4)
+					tbody
+						each item in voluntariosData.items
+							tr(class='border-t border-[var(--border-soft)] bg-white transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)]')
+								td(class='px-4 py-3 whitespace-nowrap')
+									a(
+										class='font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
+										href=`./voluntario-perfil.html?id=${item.id}`
+									)= item.nombre
+								td(class='px-4 py-3 whitespace-nowrap')
+									+uiBadge(item.tipo, 'outline')
+								td(class='px-4 py-3 whitespace-nowrap')= item.horasTotales
+								td(class='px-4 py-3 whitespace-nowrap')= item.asesorados.length
+								td(class='px-4 py-3 whitespace-nowrap')
+									+uiBadge(item.estado, 'success')

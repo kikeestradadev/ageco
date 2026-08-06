@@ -1,0 +1,14 @@
+include ui-mixins
+
+section#alertas(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		hr(class='mb-8 border-0 border-t-2 border-[var(--storybook-divider)]')
+		h2(class='mb-2 font-display text-[length:var(--h2-size)] leading-[length:var(--h2-line)] font-bold') Alertas / Notificaciones
+		p(class='mb-8 text-[length:var(--p-size)] leading-[length:var(--p-line)] text-[var(--ageco-gray-dark)]')
+			| Éxito en Verde Sigo Vigente, error en Rojo AGECO; advertencia e información adaptadas a la paleta.
+
+		div(class='grid gap-4')
+			+uiAlert('Éxito', 'La asesoría se registró correctamente en el expediente.', 'success')
+			+uiAlert('Error', 'No fue posible guardar el formulario. Revise los campos obligatorios.', 'error')
+			+uiAlert('Advertencia', 'La próxima asesoría está vencida. Programe un nuevo encuentro.', 'warning')
+			+uiAlert('Información', 'Hay 3 capacitaciones disponibles este mes para asignar.', 'info')

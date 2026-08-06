@@ -1,0 +1,87 @@
+include ui-mixins
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		a(
+			class='mb-4 inline-flex text-sm font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
+			href='./desempleados.html'
+		) ← Volver a Desempleados
+		+uiPageHeader('Agregar Desempleado', 'Formulario de demostración con campos representativos del ingreso a Sigo Vigente. No envía datos.')
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		form(
+			class='grid max-w-3xl gap-5 rounded-lg border border-[var(--border-soft)] bg-[var(--ageco-gray)] p-6',
+			action='./desempleados.html',
+			method='get'
+		)
+			div(class='grid gap-5 m:grid-cols-2')
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='nombre') Nombre completo
+					input#nombre(
+						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+						type='text',
+						name='nombre',
+						placeholder='Nombre y apellidos'
+					)
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='email') Correo electrónico
+					input#email(
+						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+						type='email',
+						name='email',
+						placeholder='correo@ejemplo.com'
+					)
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='telefono') Teléfono
+					input#telefono(
+						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+						type='tel',
+						name='telefono',
+						placeholder='8888-0000'
+					)
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='fechaIngreso') Fecha de ingreso
+					input#fechaIngreso(
+						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+						type='date',
+						name='fechaIngreso'
+					)
+
+			fieldset(class='m-0 grid gap-3 border-0 p-0')
+				legend(class='mb-1 text-sm font-semibold') Experiencia laboral
+				label(class='inline-flex items-center gap-2 text-sm')
+					input(class='size-4 accent-[var(--ageco-red)]', type='checkbox', name='experienciaLimpieza')
+					| Experiencia en limpieza
+				label(class='inline-flex items-center gap-2 text-sm')
+					input(class='size-4 accent-[var(--ageco-red)]', type='checkbox', name='manipulacionArmas')
+					| Manipulación de armas
+				label(class='inline-flex items-center gap-2 text-sm')
+					input(class='size-4 accent-[var(--ageco-red)]', type='checkbox', name='servicioCliente')
+					| Servicio al cliente
+
+			div(class='grid gap-5 m:grid-cols-2')
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='nivelIngles') Nivel de inglés
+					select#nivelIngles(
+						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+						name='nivelIngles'
+					)
+						option(value='Ninguno') Ninguno
+						option(value='Básico') Básico
+						option(value='Intermedio') Intermedio
+						option(value='Avanzado') Avanzado
+				div(class='grid gap-2')
+					label(class='text-sm font-semibold', for='licencia') Licencia de conducir
+					select#licencia(
+						class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+						name='licencia'
+					)
+						option(value='No') No
+						option(value='B1') B1
+						option(value='C1') C1
+						option(value='B1 / C1') B1 / C1
+
+			div(class='flex flex-wrap gap-3')
+				+uiButton('Guardar (demo)', null, 'primary', { type: 'submit' })
+				+uiButton('Cancelar', './desempleados.html', 'outline')

@@ -1,0 +1,17 @@
+section#navegacion(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		hr(class='mb-8 border-0 border-t-2 border-[var(--storybook-divider)]')
+		h2(class='mb-2 font-display text-[length:var(--h2-size)] leading-[length:var(--h2-line)] font-bold') Navegación
+		p(class='mb-8 text-[length:var(--p-size)] leading-[length:var(--p-line)] text-[var(--ageco-gray-dark)]')
+			| Ejemplo del menú principal del CRM. El ítem activo usa fondo Rojo AGECO.
+
+		div(class='overflow-hidden rounded-lg border border-[var(--border-soft)] bg-white')
+			div(class='flex flex-wrap items-center gap-3 border-b border-[var(--border-soft)] px-4 py-3')
+				img(class='h-10 w-auto object-contain', src='./assets/ageco-logo.png', alt='Logo AGECO', width='120', height='80')
+			nav(class='flex flex-wrap gap-1 p-3', aria-label='Ejemplo de menú')
+				each item, index in navData.items
+					- const demoActive = index === 0
+					a(
+						class=`rounded-md px-3 py-2 text-sm font-semibold no-underline ${demoActive ? 'bg-[var(--ageco-red)] text-white' : 'text-[var(--ageco-black)] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)] [@media(hover:hover)_and_(pointer:fine)]:hover:no-underline'}`,
+						href=item.href
+					)= item.label

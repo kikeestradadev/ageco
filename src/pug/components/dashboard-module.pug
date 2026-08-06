@@ -1,0 +1,31 @@
+include ui-mixins
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		+uiPageHeader(dashboardData.title, dashboardData.lead)
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		div(class='grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5')
+			each kpi in dashboardData.kpis
+				article(class='overflow-hidden rounded-lg border border-[var(--border-soft)] bg-white shadow-sm')
+					div(class='bg-[var(--sigo-green)] px-4 py-3')
+						h2(class='m-0 text-sm font-semibold text-white')= kpi.label
+					div(class='p-5')
+						p(class='m-0 font-display text-3xl font-bold text-[var(--ageco-black)]')= kpi.value
+						p(class='mt-2 mb-0 text-sm text-[var(--ageco-gray-dark)]')= kpi.hint
+						if kpi.href
+							a(
+								class='mt-4 inline-flex text-sm font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
+								href=kpi.href
+							) Ver listado
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		h2(class='mb-4 font-display text-[length:var(--h2-size)] leading-[length:var(--h2-line)] font-bold') Actividad reciente
+		div(class='overflow-hidden rounded-lg border border-[var(--border-soft)] bg-white')
+			ul(class='m-0 divide-y divide-[var(--border-soft)] list-none p-0')
+				each item in dashboardData.actividadReciente
+					li(class='flex flex-col gap-1 px-5 py-4 m:flex-row m:items-center m:justify-between')
+						p(class='m-0 text-[length:var(--p-size)] leading-[length:var(--p-line)] text-[var(--paragraph-color)]')= item.texto
+						time(class='shrink-0 text-sm text-[var(--ageco-gray-dark)]', datetime=item.fecha)= item.fecha

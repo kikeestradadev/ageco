@@ -1,0 +1,11 @@
+extends ../config/template
+
+block append config
+	- currentPage = 'login';
+	- siteName = 'AGECO · Sigo Vigente';
+	- pageDescription = 'Iniciar sesión — prototipo CRM Sigo Vigente.';
+
+block main-container
+	include ../components/login-module
+
+block scripts

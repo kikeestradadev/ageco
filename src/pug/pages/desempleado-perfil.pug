@@ -1,0 +1,11 @@
+extends ../config/template
+
+block append config
+	- currentPage = 'desempleados';
+	- siteName = 'AGECO · Sigo Vigente';
+	- pageDescription = 'Perfil de desempleado — Sigo Vigente.';
+
+block main-container
+	include ../components/desempleado-perfil-module
+
+block scripts

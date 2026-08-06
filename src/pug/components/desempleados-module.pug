@@ -1,0 +1,46 @@
+include ui-mixins
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		+uiPageHeader(desempleadosData.title, desempleadosData.lead)
+			+uiButton('Agregar Desempleado', './desempleado-formulario.html', 'primary')
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		div(
+			class='data-table',
+			data-filename='desempleados-sigo-vigente',
+			data-title='Desempleados — Sigo Vigente',
+			data-page-size='10'
+		)
+			+dataTableToolbar('buscar-desempleado', 'Buscar por nombre, estado, capacitación…')
+
+			div(class='w-full overflow-x-auto rounded-lg border border-[var(--border-soft)]')
+				table(
+					class='w-full min-w-[52rem] border-collapse text-left text-[length:var(--p-size)] leading-[length:var(--p-line)]'
+				)
+					thead
+						tr(class='bg-[var(--ageco-red)] text-white')
+							+dataTableSortHeader('Nombre', 0)
+							+dataTableSortHeader('Fecha de ingreso', 1)
+							+dataTableSortHeader('Estado', 2)
+							+dataTableSortHeader('Última capacitación', 3)
+							+dataTableSortHeader('Próxima asesoría', 4)
+					tbody
+						each item in desempleadosData.items
+							tr(class='border-t border-[var(--border-soft)] bg-white transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)]')
+								td(class='px-4 py-3 whitespace-nowrap')
+									a(
+										class='font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
+										href=`./desempleado-perfil.html?id=${item.id}`
+									)= item.nombre
+								td(class='px-4 py-3 whitespace-nowrap')= item.fechaIngreso
+								td(class='px-4 py-3 whitespace-nowrap')
+									if item.estado === 'En seguimiento'
+										+uiBadge(item.estado, 'success')
+									else if item.estado === 'Con empleo'
+										+uiBadge(item.estado, 'info')
+									else
+										+uiBadge(item.estado, 'danger')
+								td(class='px-4 py-3 whitespace-nowrap')= item.ultimaCapacitacion
+								td(class='px-4 py-3 whitespace-nowrap')= item.proximaAsesoria

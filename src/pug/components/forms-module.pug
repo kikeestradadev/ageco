@@ -1,0 +1,48 @@
+section#formularios(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		hr(class='mb-8 border-0 border-t-2 border-[var(--storybook-divider)]')
+		h2(class='mb-2 font-display text-[length:var(--h2-size)] leading-[length:var(--h2-line)] font-bold') Formularios
+		p(class='mb-8 text-[length:var(--p-size)] leading-[length:var(--p-line)] text-[var(--ageco-gray-dark)]')
+			| Campos con borde suave, foco en Rojo AGECO. Solo interfaz (sin envío real).
+
+		form(class='grid max-w-2xl gap-5 rounded-lg border border-[var(--border-soft)] bg-[var(--ageco-gray)] p-6', action='#', method='get')
+			div(class='grid gap-2')
+				label(class='text-sm font-semibold text-[var(--ageco-black)]', for='sg-nombre') Nombre completo
+				input#sg-nombre(
+					class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+					type='text',
+					name='nombre',
+					placeholder='Ej. María Gómez Vargas'
+				)
+
+			div(class='grid gap-2')
+				label(class='text-sm font-semibold text-[var(--ageco-black)]', for='sg-estado') Estado
+				select#sg-estado(
+					class='rounded-md border border-[var(--border-soft)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--ageco-red)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ageco-red)_25%,transparent)]',
+					name='estado'
+				)
+					option En seguimiento
+					option Con empleo
+
+			fieldset(class='m-0 grid gap-3 border-0 p-0')
+				legend(class='mb-1 text-sm font-semibold text-[var(--ageco-black)]') Experiencia
+				label(class='inline-flex items-center gap-2 text-sm')
+					input(class='size-4 accent-[var(--ageco-red)]', type='checkbox', name='limpieza', checked)
+					| Experiencia en limpieza
+				label(class='inline-flex items-center gap-2 text-sm')
+					input(class='size-4 accent-[var(--ageco-red)]', type='checkbox', name='cliente')
+					| Servicio al cliente
+
+			fieldset(class='m-0 grid gap-3 border-0 p-0')
+				legend(class='mb-1 text-sm font-semibold text-[var(--ageco-black)]') Nivel de inglés
+				label(class='inline-flex items-center gap-2 text-sm')
+					input(class='size-4 accent-[var(--sigo-green)]', type='radio', name='ingles', value='basico', checked)
+					| Básico
+				label(class='inline-flex items-center gap-2 text-sm')
+					input(class='size-4 accent-[var(--sigo-green)]', type='radio', name='ingles', value='intermedio')
+					| Intermedio
+
+			button(
+				class='inline-flex w-fit items-center justify-center rounded-md border-2 border-[var(--btn-primary)] bg-[var(--btn-primary)] px-5 py-3 text-sm font-semibold text-white',
+				type='button'
+			) Guardar (demo)

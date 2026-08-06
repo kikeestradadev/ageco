@@ -1,0 +1,41 @@
+include ui-mixins
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		+uiPageHeader(reportesData.title, reportesData.lead)
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		div(class='grid gap-5 sm:grid-cols-2 lg:grid-cols-4')
+			each item in reportesData.resumen
+				article(class='overflow-hidden rounded-lg border border-[var(--border-soft)] bg-white shadow-sm')
+					div(class='bg-[var(--sigo-green)] px-4 py-3')
+						h2(class='m-0 text-sm font-semibold text-white')= item.label
+					div(class='p-5')
+						p(class='m-0 font-display text-3xl font-bold')= item.value
+						p(class='mt-2 mb-0 text-sm text-[var(--ageco-gray-dark)]')= item.detalle
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		h2(class='mb-4 font-display text-[length:var(--h2-size)] leading-[length:var(--h2-line)] font-bold') Voluntarios por tipo
+		div(
+			class='data-table',
+			data-filename='reportes-voluntarios-tipo',
+			data-title='Voluntarios por tipo — Reportes',
+			data-page-size='10'
+		)
+			+dataTableToolbar('buscar-reporte-tipo', 'Buscar por tipo…')
+
+			div(class='w-full overflow-x-auto rounded-lg border border-[var(--border-soft)]')
+				table(class='w-full min-w-[28rem] border-collapse text-left text-[length:var(--p-size)]')
+					thead
+						tr(class='bg-[var(--ageco-red)] text-white')
+							+dataTableSortHeader('Tipo', 0)
+							+dataTableSortHeader('Cantidad', 1)
+							+dataTableSortHeader('Horas', 2)
+					tbody
+						each row in reportesData.porTipoVoluntario
+							tr(class='border-t border-[var(--border-soft)] bg-white [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)]')
+								td(class='px-4 py-3')= row.tipo
+								td(class='px-4 py-3')= row.cantidad
+								td(class='px-4 py-3')= row.horas

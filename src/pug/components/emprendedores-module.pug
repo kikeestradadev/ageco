@@ -1,0 +1,41 @@
+include ui-mixins
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		+uiPageHeader(emprendedoresData.title, emprendedoresData.lead)
+
+section(class='mx-auto w-full max-w-[var(--main-container)] px-[15px]')
+	div(class='mx-auto w-full max-w-[var(--container)]')
+		div(
+			class='data-table',
+			data-filename='emprendedores-sigo-vigente',
+			data-title='Emprendedores — Sigo Vigente',
+			data-page-size='10'
+		)
+			+dataTableToolbar('buscar-emprendedor', 'Buscar por nombre, negocio, etapa…')
+
+			div(class='w-full overflow-x-auto rounded-lg border border-[var(--border-soft)]')
+				table(
+					class='w-full min-w-[56rem] border-collapse text-left text-[length:var(--p-size)] leading-[length:var(--p-line)]'
+				)
+					thead
+						tr(class='bg-[var(--ageco-red)] text-white')
+							+dataTableSortHeader('Nombre', 0)
+							+dataTableSortHeader('Negocio', 1)
+							+dataTableSortHeader('Etapa', 2)
+							+dataTableSortHeader('Estado', 3)
+							+dataTableSortHeader('Próxima asesoría', 4)
+					tbody
+						each item in emprendedoresData.items
+							tr(class='border-t border-[var(--border-soft)] bg-white transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)]')
+								td(class='px-4 py-3 whitespace-nowrap')
+									a(
+										class='font-semibold text-[var(--ageco-red)] no-underline [@media(hover:hover)_and_(pointer:fine)]:hover:underline',
+										href=`./emprendedor-perfil.html?id=${item.id}`
+									)= item.nombre
+								td(class='px-4 py-3')= item.negocio
+								td(class='px-4 py-3 whitespace-nowrap')
+									+uiBadge(item.etapa, 'warning')
+								td(class='px-4 py-3 whitespace-nowrap')
+									+uiBadge(item.estado, 'success')
+								td(class='px-4 py-3 whitespace-nowrap')= item.proximaAsesoria

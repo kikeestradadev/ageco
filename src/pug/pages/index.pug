@@ -2,10 +2,11 @@ extends ../config/template
 
 block append config
 	- currentPage = 'home';
-	- siteName = 'Layouts';
+	- siteName = 'AGECO · Sigo Vigente';
 	- content = 'content';
-	- pageDescription = 'Pagina inicial de MyBoilerplate';
+	- pageDescription = 'Landing del prototipo CRM Sigo Vigente — AGECO.';
 
 block main-container
-	h1.font-bold(class='text-[length:var(--h1-size)] leading-[length:var(--h1-line)]') Home
+	include ../components/home-landing
+
 block scripts

@@ -1,0 +1,54 @@
+include ui-mixins
+
+-
+	const isAuthPage = currentPage === 'home' || currentPage === 'login' || currentPage === 'registro'
+	const headerItems = isAuthPage
+		? [{ label: 'Inicio', href: './index.html', id: 'home' }, ...navData.authItems]
+		: navData.items
+
+header(
+	class='site-header fixed top-0 right-0 left-0 z-10 mx-auto w-full min-h-[var(--header-height)] max-w-[var(--main-container)] border-b border-[var(--border-soft)] bg-[var(--ageco-white)] px-[15px]'
+)
+	div(class='mx-auto flex h-full min-h-[var(--header-height)] w-full max-w-[var(--container)] items-center justify-between gap-4')
+		a(class='inline-flex shrink-0 items-center no-underline', href='./index.html', aria-label='AGECO — Inicio')
+			img(
+				class='h-10 w-auto object-contain sm:h-12',
+				src='./assets/ageco-logo.png',
+				alt='Logo AGECO',
+				width='182',
+				height='120'
+			)
+
+		nav(class='site-header__nav hidden items-center gap-1 lg:flex', aria-label='Menú principal')
+			each item in headerItems
+				- const isActive = currentPage === item.id
+				- const isRegister = item.id === 'registro'
+				a(
+					class=`rounded-md px-3 py-2 text-sm font-semibold no-underline transition-colors duration-200 ${isRegister ? 'bg-[var(--ageco-red)] text-white' : isActive ? 'bg-[var(--sigo-green)] text-white' : 'text-[var(--ageco-black)] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[var(--ageco-gray)] [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--ageco-red)] [@media(hover:hover)_and_(pointer:fine)]:hover:no-underline'}`,
+					href=item.href,
+					aria-current=isActive ? 'page' : false
+				)= item.label
+
+		button(
+			class='site-header__menu-btn inline-flex size-11 items-center justify-center rounded-md border border-[var(--border-soft)] bg-white text-[var(--ageco-black)] lg:hidden',
+			type='button',
+			aria-expanded='false',
+			aria-controls='site-mobile-nav',
+			aria-label='Abrir menú'
+		)
+			svg(class='size-6', fill='none', viewBox='0 0 24 24', stroke='currentColor', aria-hidden='true')
+				path(stroke-linecap='round', stroke-linejoin='round', stroke-width='1.5', d='M4 6h16M4 12h16M4 18h16')
+
+	nav#site-mobile-nav(
+		class='site-header__mobile mx-auto hidden w-full max-w-[var(--container)] border-t border-[var(--border-soft)] bg-white pb-4 lg:hidden',
+		aria-label='Menú móvil'
+	)
+		ul(class='m-0 flex list-none flex-col gap-1 p-0 pt-3')
+			each item in headerItems
+				- const isActiveMobile = currentPage === item.id
+				- const isRegisterMobile = item.id === 'registro'
+				li(class='m-0')
+					a(
+						class=`block rounded-md px-3 py-3 text-sm font-semibold no-underline ${isRegisterMobile ? 'bg-[var(--ageco-red)] text-white' : isActiveMobile ? 'bg-[var(--sigo-green)] text-white' : 'text-[var(--ageco-black)]'}`,
+						href=item.href
+					)= item.label
