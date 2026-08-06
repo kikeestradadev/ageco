@@ -1,7 +1,7 @@
 {
 	"name": "ageco",
 	"version": "1.0.0",
-	"assetVersion": "1.0.15",
+	"assetVersion": "1.0.17",
 	"description": "Simple scaffolding for static web projects with Gulp + Tailwind CSS 4",
 	"type": "module",
 	"main": "gulpfile.js",
@@ -12,7 +12,7 @@
 	"scripts": {
 		"dev": "gulp",
 		"build": "node scripts/bump-assets.mjs && NODE_ENV=production gulp build",
-		"deploy": "npm run build && gh-pages -d public",
+		"deploy": "npm run build && gh-pages -d public --dotfiles --nojekyll",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"gulp": "gulp"

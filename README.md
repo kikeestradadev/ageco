@@ -39,6 +39,29 @@ src/
 public/      build output
 ```
 
+## Deploy (GitHub Pages)
+
+```bash
+npm run deploy
+```
+
+That runs a production build and publishes only `public/` to the `gh-pages` branch (with `.nojekyll` and dotfiles).
+
+### One-time setup in GitHub
+
+1. Open the repo → **Settings** → **Pages**.
+2. **Build and deployment** → Source: **Deploy from a branch**.
+3. Branch: **`gh-pages`** / folder: **`/` (root)** → Save.
+4. Wait 1–2 minutes, then open: https://kikeestradadev.github.io/ageco/
+
+If the site returns 404, Pages is usually disabled or pointing to the wrong branch/folder.
+
+### Deploy checklist
+
+- Paths in HTML/CSS/JS stay **relative** (`./dashboard.html`, `./assets/...`) so the project site under `/ageco/` works.
+- Do **not** deploy the repo root; only `public/`.
+- After deploy, hard-refresh if assets look cached (`?v=` comes from `assetVersion`).
+
 ## Notes
 
 - Swiper is loaded from jsDelivr CDN in the layout template (not an npm dependency).

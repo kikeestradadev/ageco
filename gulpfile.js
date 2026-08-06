@@ -379,6 +379,13 @@ gulp.task('clean-maps', (done) => {
 	done();
 });
 
+/** Empty file so GitHub Pages does not process the site with Jekyll. */
+gulp.task('nojekyll', (done) => {
+	fs.mkdirSync('public', { recursive: true });
+	fs.writeFileSync('public/.nojekyll', '');
+	done();
+});
+
 gulp.task(
 	'serve',
 	gulp.series('pug', 'styles', 'scripts', 'assets', (done) => {
@@ -416,5 +423,5 @@ gulp.task(
 );
 
 gulp.task('dev', gulp.series('serve'));
-gulp.task('build', gulp.series('pug', 'styles', 'scripts', 'assets', 'clean-maps'));
+gulp.task('build', gulp.series('pug', 'styles', 'scripts', 'assets', 'nojekyll', 'clean-maps'));
 gulp.task('default', gulp.series('dev'));
