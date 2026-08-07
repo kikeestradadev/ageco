@@ -26,7 +26,7 @@ No implementes “de memoria”. Omisiones típicas: sintaxis Pug corta, shells 
 | -------------------------------------------------- | -------------------------------------------------- |
 | Cualquier CSS / Tailwind                           | `tailwind-v4-only` (rule + skill)                  |
 | Variables `:root` / tipografía / colores en markup | `css-root-variables`                               |
-| Layout / sections / modules Pug                    | `layout-containers` (rule + skill)                 |
+| Layout / sections / modules / `main` Pug           | `layout-containers` (rule + skill; gap + `pb` en `main`) |
 | Plantillas Pug                                     | `pug-long-syntax` (rule + skill), `pug-data-files` |
 | Datos de componentes / sliders                     | `pug-data-files`, skill `create-slider-data`       |
 | Sliders / Swiper                                   | `create-slider-data` + `javascript-modules`        |

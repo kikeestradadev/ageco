@@ -32,7 +32,9 @@ html(lang='es', prefix='og: http://ogp.me/ns#', class='no-js')
 		itemtype='http://schema.org/WebPage'
 	)
 		include ../components/site-header
-		main(class='flex w-full flex-1 flex-col max-w-[var(--main-container)] gap-[var(--section-gap)]')
+		main(
+			class='flex w-full max-w-[var(--main-container)] flex-1 flex-col gap-[var(--section-gap)] pb-[var(--section-gap)]'
+		)
 			block main-container
 		include ../components/site-footer
 		include ../components/floating-button
