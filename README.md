@@ -2,7 +2,7 @@
 
 Scaffolding for static sites with Gulp 5, Pug, and Tailwind CSS 4.
 
-**Demo (GitHub Pages):** [https://kikeestradadev.github.io/gulp-boilerplate-2024-tailwind-4/](https://kikeestradadev.github.io/gulp-boilerplate-2024-tailwind-4/)
+**Demo (GitHub Pages):** [https://kikeestradadev.github.io/ageco/](https://kikeestradadev.github.io/ageco/)
 
 ## Stack
 
